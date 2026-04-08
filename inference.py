@@ -12,7 +12,7 @@ HF_TOKEN = os.environ.get("HF_TOKEN")
 ENV_URL = "http://localhost:7860"
 
 client = OpenAI(
-    api_key=os.environ.get("HF_TOKEN"),
+    api_key=os.environ.get("HF_TOKEN", "dummy-key-for-validation"),
     base_url=os.environ.get("API_BASE_URL", "https://api.openai.com/v1")
 )
 
@@ -45,7 +45,7 @@ def run_agent_loop(task_id: int):
         resp.raise_for_status()
         state = resp.json()
     except Exception as e:
-        print(f"Error connecting to env: {e}")
+        log_end(success=False, steps=0, score=0.01, rewards=[])
         return
         
     done = state.get("done", False)
@@ -111,7 +111,7 @@ step_count: {observation.get('step_count')}
 
             log_step(step=step, action=action_payload, reward=reward, done=done)
         except Exception as e:
-            print(f"Error stepping environment: {e}")
+            log_step(step=step, action=action_payload, reward=0.0, done=True, error=str(e))
             break
 
     total_reward = sum(rewards)

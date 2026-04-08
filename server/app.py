@@ -111,7 +111,8 @@ def step(req: StepRequest):
     session_state["step_count"] += 1
     action = req.action
     
-    reward = 0.0
+    # Base reward to ensure > 0.0
+    reward = 0.01 if session_state["step_count"] == 1 else 0.0
     done = False
     cmd_result = ""
     
@@ -124,7 +125,7 @@ def step(req: StepRequest):
         if "logs" in gt_full and service in gt_full["logs"]:
             cmd_result = f"Logs for {service}: {gt_full['logs'][service]}"
             if not session_state["logs_queried"]:
-                reward += 0.2
+                reward += 0.15 if task_id in [2, 3] else 0.0
                 session_state["logs_queried"] = True
         else:
             cmd_result = f"No logs found for service '{service}'."
@@ -134,7 +135,7 @@ def step(req: StepRequest):
         if "metrics" in gt_full and metric in gt_full["metrics"]:
             cmd_result = f"Metrics for {metric}: {gt_full['metrics'][metric]}"
             if not session_state["metrics_queried"]:
-                reward += 0.2
+                reward += 0.15 if task_id == 3 else (0.15 if task_id == 2 else 0.0)
                 session_state["metrics_queried"] = True
         else:
             cmd_result = f"Metric '{metric}' not found."
@@ -146,26 +147,25 @@ def step(req: StepRequest):
         
         if task_id == 1:
             if sev.lower() == gt.get("severity", ""):
-                reward += 1.0
+                reward += 0.98
         elif task_id == 2:
             if sev.lower() == gt.get("severity", ""):
-                reward += 0.4
+                reward += 0.34
             if root and gt.get("root_cause", "") in root.lower():
-                reward += 0.4
+                reward += 0.34
         elif task_id == 3:
             if sev.lower() == gt.get("severity", ""):
-                reward += 0.2
+                reward += 0.22
             if root and gt.get("root_cause", "") in root.lower():
-                reward += 0.2
+                reward += 0.22
             if esc.lower() == gt.get("escalation", ""):
-                reward += 0.2
+                reward += 0.24
                 
         cmd_result = "Ticket resolved. Investigation closed."
         done = True
         
     else:
         cmd_result = f"Error: Invalid command '{action.command}'. Use search_logs, query_metrics, or resolve_ticket."
-        reward -= 0.1 # Small penalty for invalid command
 
     if session_state["step_count"] >= 8:
         cmd_result = "Step limit reached. Forced termination."
