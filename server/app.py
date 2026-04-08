@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Body
 from pydantic import BaseModel, Field
 from typing import Any, Dict, Optional, Literal
 import random
@@ -75,7 +75,7 @@ def health_check():
 
 
 @app.post("/reset", response_model=ActionResponse)
-def reset(req: Optional[ResetRequest] = None):
+def reset(req: Optional[ResetRequest] = Body(default=None)):
     req = req or ResetRequest(task_id=1)
     session_state["task_id"] = req.task_id
     session_state["step_count"] = 0
