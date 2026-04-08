@@ -188,3 +188,16 @@ def step(req: StepRequest):
 def state():
     return session_state
 
+def main():
+    """Entry point for the Bug Triage SRE environment server."""
+    import uvicorn
+    uvicorn.run(
+        app,
+        host="0.0.0.0",
+        port=8000,
+        log_level="info"
+    )
+
+if __name__ == "__main__":
+    main()
+
