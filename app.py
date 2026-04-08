@@ -75,7 +75,8 @@ def health_check():
 
 
 @app.post("/reset", response_model=ActionResponse)
-def reset(req: ResetRequest):
+def reset(req: Optional[ResetRequest] = None):
+    req = req or ResetRequest(task_id=1)
     session_state["task_id"] = req.task_id
     session_state["step_count"] = 0
     session_state["logs_queried"] = False
