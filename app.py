@@ -22,7 +22,7 @@ class BugTriageObservation(BaseModel):
     step_count: int
 
 class ResetRequest(BaseModel):
-    task_id: int
+    task_id: int = 1
 
 class StepRequest(BaseModel):
     action: BugTriageAction
