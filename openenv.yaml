@@ -1,0 +1,17 @@
+name: bug-triage-assistant
+version: "1.0.0"
+description: "An Interactive SRE Environment simulating bug triage, incident response, and root cause analysis with pseudo-tools."
+tasks:
+  - id: 1
+    name: "Severity Classification"
+    description: "Classify the severity of an incoming bug report directly from the description."
+    difficulty: "easy"
+  - id: 2
+    name: "Log Investigation"
+    description: "Agent must use 'search_logs' action to investigate before deriving the root cause."
+    difficulty: "medium"
+  - id: 3
+    name: "Deep Triangulation"
+    description: "Agent must investigate logs and metrics using tools to find latency sources and escalate."
+    difficulty: "hard"
+license: MIT
