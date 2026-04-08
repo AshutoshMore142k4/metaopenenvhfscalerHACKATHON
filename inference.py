@@ -115,8 +115,8 @@ step_count: {observation.get('step_count')}
             break
 
     total_reward = sum(rewards)
-    # clamp to 0-1
-    score = min(max(total_reward, 0.0), 1.0)
+    # clamp strictly between 0 and 1
+    score = min(max(total_reward, 0.01), 0.99)
     success = score >= 0.5
     
     log_end(success=success, steps=step, score=score, rewards=rewards)
