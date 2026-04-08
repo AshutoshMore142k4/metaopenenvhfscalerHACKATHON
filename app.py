@@ -41,24 +41,33 @@ session_state = {
     "metrics_queried": False
 }
 
-EASY_TICKETS = [
-    {"desc": "The login button is completely broken and nobody can access the app.", "gt": {"severity": "critical"}}
-]
-MEDIUM_TICKETS = [
-    {
+def generate_easy_ticket():
+    return random.choice([
+        {"desc": "The login feature is completely broken, users cannot log in.", "gt": {"severity": "critical"}},
+        {"desc": "There is a typo on the about us page.", "gt": {"severity": "low"}},
+        {"desc": "Users are reporting emails are delayed by a few minutes.", "gt": {"severity": "medium"}}
+    ])
+
+def generate_medium_ticket():
+    dbs = ["pgsql", "mysql", "mongodb", "redis"]
+    error = random.choice(["OutOfMemory", "ConnectionTimeout", "Deadlock"])
+    db = random.choice(dbs)
+    return {
         "desc": "User reported slow performance during checkout.", 
-        "logs": {"database": "OutOfMemory errors detected in pgsql pool", "frontend": "No errors"},
+        "logs": {"database": f"{error} errors detected in {db} pool", "frontend": "No errors"},
         "gt": {"severity": "high", "root_cause": "database"}
     }
-]
-HARD_TICKETS = [
-    {
+
+def generate_hard_ticket():
+    providers = ["Stripe", "PayPal", "Adyen", "Braintree"]
+    p = random.choice(providers)
+    lat = random.randint(5000, 15000)
+    return {
         "desc": "Intermittent failure when payment gateway is used.", 
-        "logs": {"payment": "Timeout connecting to Stripe API 504", "database": "All queries successful"},
-        "metrics": {"payment_latency": "p99 10000ms", "cpu": "30%"},
+        "logs": {"payment": f"Timeout connecting to {p} API 504", "database": "All queries successful"},
+        "metrics": {"payment_latency": f"p99 {lat}ms", "cpu": f"{random.randint(20,40)}%"},
         "gt": {"severity": "high", "root_cause": "payment", "escalation": "billing_team"}
     }
-]
 
 @app.get("/")
 def health_check():
@@ -73,11 +82,11 @@ def reset(req: ResetRequest):
     session_state["metrics_queried"] = False
     
     if req.task_id == 1:
-        ticket = random.choice(EASY_TICKETS)
+        ticket = generate_easy_ticket()
     elif req.task_id == 2:
-        ticket = random.choice(MEDIUM_TICKETS)
+        ticket = generate_medium_ticket()
     elif req.task_id == 3:
-        ticket = random.choice(HARD_TICKETS)
+        ticket = generate_hard_ticket()
     else:
         raise HTTPException(status_code=400, detail="Invalid task ID")
         
