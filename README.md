@@ -1,5 +1,13 @@
-# OpenEnv SRE Bug Triage Benchmark
+---
+title: Bug Triage SRE Env
+emoji: 🐛
+colorFrom: blue
+colorTo: green
+sdk: docker
+pinned: false
+---
 
+# OpenEnv SRE Bug Triage Benchmark
 ## Motivation
 This environment models a **production-grade engineering and support workflow**. Teams spend countless hours reading vague bug reports, matching them to stack traces, assessing priority, and routing them to the correct group. This interactive environment evaluates whether LLM agents can act like real Site Reliability Engineers (SREs), using **tools** to deduce root causes before making final resolutions.
 
